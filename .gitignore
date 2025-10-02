@@ -3,6 +3,8 @@
 .idea/
 *.swp
 *.swo
+.cursorrules
+.cursorignore
 
 # macOS
 .DS_Store
