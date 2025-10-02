@@ -1,13 +1,13 @@
-# 🧠 BrainFit - Cognitive Health Mobile App
+# BrainFit - Cognitive Health Mobile App
 
-[![React Native](https://img.shields.io/badge/React%20Native-0.79.5-blue.svg)](https://reactnative.dev/)
-[![Expo](https://img.shields.io/badge/Expo-53.0.20-black.svg)](https://expo.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.81.4-blue.svg)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-54.0.11-black.svg)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > **BrainFit** is a mobile application designed specifically for adults 50+ to maintain and improve cognitive health through daily habit tracking and educational content.
 
-## 🎯 **Project Overview**
+## Project Overview
 
 BrainFit focuses on five key pillars of cognitive health:
 - 🏃‍♂️ **Exercise** - Physical activity tracking
@@ -16,7 +16,7 @@ BrainFit focuses on five key pillars of cognitive health:
 - 😴 **Sleep** - Sleep quality and duration tracking
 - 🥗 **Diet** - Nutrition and hydration monitoring
 
-## ✨ **Key Features**
+## Key Features
 
 - **Daily Goal Tracking** - Set and monitor daily goals across all 5 pillars
 - **Progress Visualization** - Beautiful progress rings, weekly calendars, and trend analysis
@@ -25,13 +25,20 @@ BrainFit focuses on five key pillars of cognitive health:
 - **Offline-First** - Works seamlessly without internet connection
 - **Performance Optimized** - Fast, responsive interface with efficient data storage
 
-## 🚀 **Getting Started**
+## Getting Started
 
-### **Prerequisites**
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI (`npm install -g @expo/cli`)
-- iOS Simulator (for iOS development) or Android Studio (for Android development)
+### Prerequisites
+- Node.js (v19 or higher)
+- npm (v9 or higher) or yarn (v4 or higher)
+- Expo CLI (`npm install -g expo-cli`)
+- For iOS development:
+  - macOS
+  - Xcode (latest version)
+  - iOS Simulator
+- For Android development:
+  - Android Studio
+  - Android SDK
+  - Android Emulator
 
 ### **Installation**
 
@@ -146,11 +153,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📚 **Documentation**
+## Documentation
 
-- [Development Plan](BrainFit_Documentation/DEVELOPMENT_PLAN.md) - Detailed roadmap and progress
-- [Technical Reference](BrainFit_Documentation/TECHNICAL_REFERENCE.md) - Technical implementation details
-- [Current Status](BrainFit_Documentation/CURRENT_STATUS.md) - Real-time project status
+- [Architecture](docs/technical/architecture.md) - System architecture and implementation
+- [Performance](docs/technical/performance.md) - Performance guidelines and targets
+- [Security](docs/technical/security.md) - Security measures and guidelines
+- [Contributing](CONTRIBUTING.md) - How to contribute to BrainFit
 
 ## 🧪 **Testing**
 

@@ -2,27 +2,35 @@
 
 Thank you for your interest in contributing to BrainFit! This document provides guidelines and information for contributors.
 
-## 🤝 **How to Contribute**
+## How to Contribute
 
-### **Types of Contributions**
-- 🐛 **Bug Reports**: Report bugs or issues you encounter
-- 💡 **Feature Requests**: Suggest new features or improvements
-- 📝 **Documentation**: Help improve documentation
-- 🔧 **Code Contributions**: Submit code improvements or new features
-- 🧪 **Testing**: Help test the application and report issues
+### Types of Contributions
+- **Bug Reports**: Report bugs or issues you encounter
+- **Feature Requests**: Suggest new features or improvements
+- **Documentation**: Help improve documentation
+- **Code Contributions**: Submit code improvements or new features
+- **Testing**: Help test the application and report issues
 
 ### **Before You Start**
 1. Check existing [Issues](https://github.com/ajmcginty/brain-fit/issues) to see if your idea has already been discussed
-2. Read the [Development Plan](BrainFit_Documentation/DEVELOPMENT_PLAN.md) to understand current priorities
+2. Review the [Current Development Focus](#current-development-focus) section below
 3. Ensure your contribution aligns with the project's goals and roadmap
 
 ## 🚀 **Development Setup**
 
-### **Prerequisites**
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- Git
+### Prerequisites
+- Node.js (v19 or higher)
+- npm (v9 or higher) or yarn (v4 or higher)
+- Expo CLI (`npm install -g expo-cli`)
+- Git (v2.30 or higher)
+- For iOS development:
+  - macOS
+  - Xcode (latest version)
+  - iOS Simulator
+- For Android development:
+  - Android Studio
+  - Android SDK
+  - Android Emulator
 
 ### **Setup Steps**
 1. Fork the repository
@@ -121,10 +129,13 @@ Then create a Pull Request on GitHub with:
 - Update README.md if adding new features
 - Keep development plan updated
 
-### **Documentation Files**
+### Documentation Files
 - `README.md` - Project overview and setup
 - `CONTRIBUTING.md` - This file
-- `BrainFit_Documentation/` - Technical documentation
+- `docs/technical/` - Technical documentation
+  - `architecture.md` - System architecture
+  - `performance.md` - Performance guidelines
+  - `security.md` - Security measures
 - Code comments and JSDoc
 
 ## 🐛 **Bug Reports**
@@ -201,12 +212,37 @@ We use the following labels to categorize issues:
 - `priority: high` - High priority issues
 - `priority: low` - Low priority issues
 
-## 🎯 **Current Priorities**
+## Current Development Focus
 
-Based on our [Development Plan](BrainFit_Documentation/DEVELOPMENT_PLAN.md), current priorities are:
-1. **MMKV Integration** - Performance optimization
-2. **Firebase Integration** - Cloud sync capabilities
-3. **Testing & Polish** - Final quality improvements
+### Current Status
+- **MVP Completion**: 95% complete
+- **Current Phase**: MMKV Integration & Performance
+- **Target Completion**: 3 weeks to production-ready status
+
+### Immediate Priorities
+1. **MMKV Integration**
+   - MMKV setup and configuration
+   - Profile-aware storage structure
+   - Data migration from AsyncStorage
+   - Performance optimization
+
+2. **Firebase Integration**
+   - Firebase project setup
+   - Profile-based security rules
+   - Sync system implementation
+   - Offline queue system
+
+3. **Testing & Polish**
+   - Comprehensive testing
+   - Performance validation
+   - Documentation updates
+   - Final UI/UX refinements
+
+### Performance Targets
+- **App Launch**: < 2 seconds
+- **Profile Operations**: < 1 second
+- **Data Sync**: < 5 seconds
+- **Storage Migration**: < 5 seconds per profile
 
 ## 📞 **Getting Help**
 
