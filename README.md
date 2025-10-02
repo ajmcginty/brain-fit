@@ -1,29 +1,58 @@
-# BrainFit - Cognitive Health Mobile App
+# BrainFit
 
 [![React Native](https://img.shields.io/badge/React%20Native-0.81.4-blue.svg)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-54.0.11-black.svg)](https://expo.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **BrainFit** is a mobile application designed specifically for adults 50+ to maintain and improve cognitive health through daily habit tracking and educational content.
+BrainFit is a comprehensive mobile application that empowers adults aged 50 and above to maintain and enhance their cognitive health. Through evidence-based habit tracking and educational resources, the platform delivers a personalized approach to cognitive wellness.
 
-## Project Overview
+## Overview
 
-BrainFit focuses on five key pillars of cognitive health:
-- 🏃‍♂️ **Exercise** - Physical activity tracking
-- 🧩 **Cognitive Stimulation** - Brain training and mental exercises
-- 👥 **Social Activity** - Social engagement monitoring
-- 😴 **Sleep** - Sleep quality and duration tracking
-- 🥗 **Diet** - Nutrition and hydration monitoring
+The application focuses on five essential pillars of cognitive health:
 
-## Key Features
+**Exercise**
+- Physical activity monitoring
+- Customized exercise recommendations
+- Activity intensity tracking
 
-- **Daily Goal Tracking** - Set and monitor daily goals across all 5 pillars
-- **Progress Visualization** - Beautiful progress rings, weekly calendars, and trend analysis
-- **Educational Content** - Curated articles and resources for cognitive health
-- **Profile Management** - Personalized experience with device-based profiles
-- **Offline-First** - Works seamlessly without internet connection
-- **Performance Optimized** - Fast, responsive interface with efficient data storage
+**Cognitive Stimulation**
+- Brain training exercises
+- Mental wellness activities
+- Cognitive performance tracking
+
+**Social Engagement**
+- Social activity monitoring
+- Community interaction tracking
+- Social wellness metrics
+
+**Sleep Quality**
+- Sleep pattern analysis
+- Duration monitoring
+- Quality assessment
+
+**Nutrition**
+- Dietary habit tracking
+- Hydration monitoring
+- Nutritional guidance
+
+## Core Capabilities
+
+**Goal Management and Analytics**
+- Comprehensive daily goal tracking across all health pillars
+- Advanced progress visualization with interactive dashboards
+- Detailed trend analysis and performance metrics
+
+**Educational Resources**
+- Curated, evidence-based articles on cognitive health
+- Personalized content recommendations
+- Expert-reviewed health resources
+
+**Technical Features**
+- Robust offline functionality
+- Device-based profile management
+- Optimized performance and response times
+- Secure data handling and storage
 
 ## Getting Started
 
@@ -64,7 +93,7 @@ BrainFit focuses on five key pillars of cognitive health:
    - Press `a` for Android emulator
    - Scan QR code with Expo Go app on your device
 
-## 🏗️ **Project Structure**
+## Project Structure
 
 ```
 BrainFit/
@@ -80,11 +109,11 @@ BrainFit/
 │   │   └── constants/            # App constants and theme
 │   ├── assets/                   # Images, fonts, and static files
 │   └── package.json
-├── BrainFit_Documentation/       # Project documentation
+├── docs/                         # Project documentation
 └── README.md
 ```
 
-## 🛠️ **Technology Stack**
+## Technology Stack
 
 - **Frontend**: React Native with Expo
 - **Language**: TypeScript
@@ -94,7 +123,7 @@ BrainFit/
 - **UI Components**: Custom components with consistent theming
 - **Build Tool**: Expo CLI
 
-## 📱 **App Architecture**
+## Application Architecture
 
 ### **Core Components**
 - **Profile System**: Device-based user profiles with data isolation
@@ -108,7 +137,7 @@ BrainFit/
 - **Persistent State**: Automatic state persistence across app sessions
 - **Profile Isolation**: Data separation per user profile
 
-## 🔧 **Development**
+## Development
 
 ### **Available Scripts**
 ```bash
@@ -124,25 +153,25 @@ npm run web        # Run in web browser
 - Consistent naming conventions
 - Comprehensive error handling
 
-## 📊 **Current Status**
+## Implementation Status
 
 - **MVP Completion**: 95% ✅
 - **Current Phase**: MMKV Integration & Performance Optimization
 - **Target Completion**: 3 weeks to production-ready status
 
-### **Completed Features**
-- ✅ Core infrastructure (Expo, TypeScript, Navigation)
-- ✅ Goal tracking system with progress visualization
-- ✅ Educational content management
-- ✅ Profile system foundation
-- ✅ UI/UX foundation with consistent theming
+### Completed Features
+- Core infrastructure implementation (Expo, TypeScript, Navigation)
+- Goal tracking system with progress visualization
+- Educational content management system
+- Profile system foundation
+- UI/UX implementation with consistent theming
 
-### **In Progress**
-- 🚧 MMKV storage migration for performance
-- 🚧 Firebase integration for cloud sync
-- 🚧 Final polish and testing
+### Current Development
+- MMKV storage migration for enhanced performance
+- Firebase integration for cloud synchronization
+- Final optimization and testing phase
 
-## 🤝 **Contributing**
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -160,45 +189,45 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - [Security](docs/technical/security.md) - Security measures and guidelines
 - [Contributing](CONTRIBUTING.md) - How to contribute to BrainFit
 
-## 🧪 **Testing**
+## Testing
 
 - **Unit Tests**: Component and utility function testing
 - **Integration Tests**: Navigation and state management testing
 - **Performance Testing**: Storage operations and app responsiveness
 - **User Testing**: Real-world usage validation
 
-## 📈 **Performance Targets**
+## Performance Targets
 
 - **App Launch**: < 2 seconds
 - **Profile Operations**: < 1 second
 - **Data Sync**: < 5 seconds
 - **Storage Migration**: < 5 seconds per profile
 
-## 🔒 **Security**
+## Security
 
 - Device-based profile isolation
 - Local data encryption (planned)
 - Secure API communication (planned)
 - Privacy-first design approach
 
-## 📄 **License**
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 **Acknowledgments**
+## Acknowledgments
 
 - React Native community for the excellent framework
 - Expo team for the amazing development platform
 - All contributors and testers who helped shape this app
 
-## 📞 **Support**
+## Support
 
 - **Issues**: [GitHub Issues](https://github.com/ajmcginty/brain-fit/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/ajmcginty/brain-fit/discussions)
-- **Documentation**: Check the [BrainFit_Documentation](BrainFit_Documentation/) folder
+- **Documentation**: Check the [docs](docs/) folder for detailed technical documentation
 
 ---
 
-**Made with ❤️ for cognitive health and wellness**
+*Dedicated to advancing cognitive health and wellness.*
 
-*Last updated: January 2025*
+*Last Updated: January 2025*
