@@ -102,6 +102,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ style }) => {
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>Weekly Overview</Text>
+      <Text style={styles.subtitle} accessibilityRole="text">Tap a day to view details</Text>
       <View style={styles.daysContainer}>
         {days.map((day) => (
                 <TouchableOpacity
@@ -136,7 +137,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ style }) => {
           selectedDate === day.date && styles.selectedText
         ]}>{Math.round(day.percentage)}%</Text>
         
-        {selectedDate === day.date && day.goals && (
+        {selectedDate === day.date && (
           <Animated.View style={[
             styles.detailsContainer,
             {
@@ -243,6 +244,12 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
     marginBottom: layout.containerPadding,
     color: colors.text.primary,
+  },
+  subtitle: {
+    fontSize: typography.sizes.caption,
+    color: colors.text.secondary,
+    marginTop: -layout.touchableGap / 2,
+    marginBottom: layout.containerPadding,
   },
   daysContainer: {
     flexDirection: 'row',
