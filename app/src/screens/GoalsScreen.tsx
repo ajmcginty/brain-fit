@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GoalCheckbox } from '../components/GoalCheckbox';
@@ -15,24 +15,40 @@ const GOAL_ICONS = {
 };
 
 const GOAL_LABELS = {
-  exercise: 'Physical Exercise',
-  cognitive: 'Brain Training',
-  social: 'Social Activity',
-  sleep: 'Quality Sleep',
-  diet: 'Healthy Diet',
+  exercise: 'Exercised for 30 minutes',
+  cognitive: 'Challenged my brain',
+  social: 'Did a social activity',
+  sleep: 'Got a good nights sleep',
+  diet: 'Ate healthy meals',
 };
 
 export const GoalsScreen = () => {
   const { addGoal, updateGoal, getGoalByDate } = useGoalsStore();
-  const today = formatDate(new Date());
-  const todayGoal = getGoalByDate(today);
+  const [currentDate, setCurrentDate] = useState<string>(formatDate(new Date()));
+  const todayGoal = getGoalByDate(currentDate);
 
   useEffect(() => {
     if (!todayGoal) {
       // Create today's goal if it doesn't exist
-      addGoal(createEmptyGoal(today));
+      addGoal(createEmptyGoal(currentDate));
     }
-  }, [todayGoal, addGoal, today]);
+  }, [todayGoal, addGoal, currentDate]);
+
+  // Auto-reset goals daily by watching for date changes (checks every 60s)
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = formatDate(new Date());
+      if (now !== currentDate) {
+        setCurrentDate(now);
+        const existing = getGoalByDate(now);
+        if (!existing) {
+          addGoal(createEmptyGoal(now));
+        }
+      }
+    }, 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [currentDate, addGoal, getGoalByDate]);
 
   const handleToggleGoal = (type: keyof typeof GOAL_ICONS) => {
     if (!todayGoal) return;
@@ -58,7 +74,9 @@ export const GoalsScreen = () => {
         </View>
         
         <View style={styles.goalsContainer}>
-          {(Object.keys(GOAL_ICONS) as Array<keyof typeof GOAL_ICONS>).map((type) => (
+          {([...Object.keys(GOAL_ICONS)] as Array<keyof typeof GOAL_ICONS>)
+            .sort((a, b) => Number(!!todayGoal?.[a]) - Number(!!todayGoal?.[b]))
+            .map((type) => (
             <GoalCheckbox
               key={type}
               label={GOAL_LABELS[type]}

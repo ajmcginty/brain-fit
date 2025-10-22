@@ -15,7 +15,11 @@ interface GoalCheckboxProps {
 export const GoalCheckbox = ({ label, isChecked, onToggle, icon }: GoalCheckboxProps) => {
   return (
     <Pressable
-      style={[styles.container, { minHeight: layout.touchableMinHeight }]}
+      style={[
+        styles.container,
+        { minHeight: layout.touchableMinHeight },
+        isChecked && styles.containerCompleted,
+      ]}
       onPress={onToggle}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: isChecked }}
@@ -31,11 +35,11 @@ export const GoalCheckbox = ({ label, isChecked, onToggle, icon }: GoalCheckboxP
         <MaterialCommunityIcons 
           name={icon} 
           size={24} 
-          color={colors.primary}
+          color={isChecked ? colors.text.disabled : colors.primary}
           accessibilityRole="image" as AccessibilityRole
           accessibilityLabel={`${label} icon`}
         />
-        <Text style={styles.label}>{label}</Text>
+        <Text style={[styles.label, isChecked && styles.labelCompleted]}>{label}</Text>
       </View>
     </Pressable>
   );
@@ -51,6 +55,9 @@ const styles = StyleSheet.create({
     marginVertical: layout.touchableGap,
     minHeight: layout.touchableMinHeight,
     ...shadows.small,
+  },
+  containerCompleted: {
+    opacity: 0.6,
   },
   checkbox: {
     width: layout.touchableMinHeight * 0.6,
@@ -74,5 +81,9 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.bodyLarge,
     marginLeft: layout.touchableGap,
     color: colors.text.primary,
+  },
+  labelCompleted: {
+    textDecorationLine: 'line-through',
+    color: colors.text.secondary,
   },
 });
