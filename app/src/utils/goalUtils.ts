@@ -48,5 +48,6 @@ export const createEmptyGoal = (date: string): Omit<DailyGoal, 'id'> => {
     social: false,
     sleep: false,
     diet: false,
+    updatedAt: new Date().toISOString(),
   };
 };

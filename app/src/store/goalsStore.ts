@@ -4,6 +4,8 @@ import { GoalsState, DailyGoal, GoalStats } from '../types/goals';
 import { calculateCompletionRate, calculateStreak, formatDate } from '../utils/goalUtils';
 import { storage } from '../services/storage';
 import { StorageError } from '../utils/errors';
+import { getCurrentUid } from '../services/cloudAuth';
+import { syncTodayGoal } from '../services/cloudSync';
 
 const INITIAL_STATS: GoalStats = {
   weeklyCompletion: 0,
@@ -20,6 +22,7 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
     const newGoal: DailyGoal = {
       ...goalData,
       id: `goal_${Date.now()}`,
+      updatedAt: new Date().toISOString(),
     };
 
     set((state) => ({
@@ -31,6 +34,11 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
       const { dailyGoals } = get();
       await storage.saveDailyGoals(dailyGoals);
       await get().updateStats();
+      // Best-effort cloud sync
+      const uid = getCurrentUid();
+      if (uid) {
+        await syncTodayGoal(uid);
+      }
     } catch (error) {
       // Revert state on error
       set((state) => ({
@@ -59,7 +67,7 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
 
     set((state) => ({
       dailyGoals: state.dailyGoals.map((goal) =>
-        goal.id === id ? { ...goal, ...updates } : goal
+        goal.id === id ? { ...goal, ...updates, updatedAt: new Date().toISOString() } : goal
       ),
     }));
 
@@ -68,6 +76,11 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
       const { dailyGoals } = get();
       await storage.saveDailyGoals(dailyGoals);
       await get().updateStats();
+      // Best-effort cloud sync
+      const uid = getCurrentUid();
+      if (uid) {
+        await syncTodayGoal(uid);
+      }
     } catch (error) {
       // Revert state on error
       set({ dailyGoals: previousGoals });
@@ -128,16 +141,35 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
   },
 }));
 
-// Initialize store with data from storage
+// Initialize store with data from storage and cloud
 export const initializeGoalsStore = async () => {
   try {
-    const storedGoals = await storage.getDailyGoals();
-    const storedStats = await storage.getGoalStats();
-
-    if (storedGoals.length > 0) {
-      useGoalsStore.setState({ dailyGoals: storedGoals });
+    // Try to pull and merge from cloud first
+    const { getCurrentUid } = await import('../services/cloudAuth');
+    const { pullAndMergeGoals } = await import('../services/cloudSync');
+    
+    const uid = getCurrentUid();
+    let mergedGoals;
+    
+    if (uid) {
+      // Pull from cloud and merge with local
+      mergedGoals = await pullAndMergeGoals(uid);
+      
+      // Save merged goals back to local storage
+      if (mergedGoals.length > 0) {
+        await storage.saveDailyGoals(mergedGoals);
+        useGoalsStore.setState({ dailyGoals: mergedGoals });
+      }
+    } else {
+      // No uid, just load local
+      const storedGoals = await storage.getDailyGoals();
+      if (storedGoals.length > 0) {
+        useGoalsStore.setState({ dailyGoals: storedGoals });
+      }
     }
 
+    // Load or recalculate stats
+    const storedStats = await storage.getGoalStats();
     if (storedStats) {
       useGoalsStore.setState({ stats: storedStats });
     } else {

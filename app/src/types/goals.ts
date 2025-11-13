@@ -7,6 +7,7 @@ export interface DailyGoal {
   sleep: boolean;
   diet: boolean;
   notes?: string;
+  updatedAt?: string; // ISO timestamp for conflict resolution
 }
 
 export interface GoalStats {
