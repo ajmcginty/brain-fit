@@ -83,12 +83,26 @@ The application focuses on five essential pillars of cognitive health:
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up Firebase environment variables**
+   
+   In your terminal (before running the app), export these variables:
+   ```bash
+   export EXPO_PUBLIC_FIREBASE_API_KEY="your-api-key"
+   export EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
+   export EXPO_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+   export EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+   export EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
+   export EXPO_PUBLIC_FIREBASE_APP_ID="your-app-id"
+   ```
+   
+   Get these values from your Firebase Console (Project Settings → Web App).
+
+4. **Start the development server**
    ```bash
    npm start
    ```
 
-4. **Run on device/simulator**
+5. **Run on device/simulator**
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
    - Scan QR code with Expo Go app on your device
@@ -119,23 +133,24 @@ BrainFit/
 - **Language**: TypeScript
 - **State Management**: Zustand
 - **Navigation**: React Navigation v7
-- **Storage**: AsyncStorage (with MMKV migration planned)
+- **Local Storage**: AsyncStorage
+- **Backend**: Firebase (Anonymous Auth + Firestore)
 - **UI Components**: Custom components with consistent theming
 - **Build Tool**: Expo CLI
 
 ## Application Architecture
 
 ### **Core Components**
-- **Profile System**: Device-based user profiles with data isolation
-- **Goal Tracking**: Daily goal management across 5 health pillars
+- **Profile System**: Device-based user profiles with Firebase anonymous authentication
+- **Goal Tracking**: Daily goal management across 5 health pillars with cloud sync
 - **Progress Visualization**: Interactive progress rings and calendars
-- **Content Management**: Article system with search and filtering
-- **Storage Service**: Efficient local data persistence
+- **Content Management**: Curated article links to external health resources
+- **Storage Service**: AsyncStorage for local data with Firebase Firestore backup
 
 ### **State Management**
 - **Zustand Stores**: Separate stores for profiles, goals, articles, and authentication
 - **Persistent State**: Automatic state persistence across app sessions
-- **Profile Isolation**: Data separation per user profile
+- **Cloud Sync**: One-way sync (app → cloud) on goal changes, pull and merge on startup
 
 ## Development
 
@@ -155,39 +170,46 @@ npm run web        # Run in web browser
 
 ## Implementation Status
 
-- **MVP Completion**: 95% ✅
-- **Current Phase**: MMKV Integration & Performance Optimization
-- **Target Completion**: 3 weeks to production-ready status
+- **MVP Completion**: ✅ Complete
+- **Current Phase**: Testing and refinement
 
 ### Completed Features
-- Core infrastructure implementation (Expo, TypeScript, Navigation)
-- Goal tracking system with progress visualization
-- Educational content management system
-- Profile system foundation
-- UI/UX implementation with consistent theming
+- ✅ Core infrastructure (Expo, TypeScript, Navigation)
+- ✅ Goal tracking system with progress visualization
+- ✅ Educational content with external article links
+- ✅ Profile system with device-based authentication
+- ✅ Firebase anonymous authentication
+- ✅ Firestore cloud sync for goals (offline-first)
+- ✅ UI/UX with consistent theming
 
-### Current Development
-- MMKV storage migration for enhanced performance
-- Firebase integration for cloud synchronization
-- Final optimization and testing phase
+### Future Enhancements
+- Add retry/backoff for failed syncs
+- Manual "Sync Now" button
+- Toast notifications for sync status
+- Unit tests for stores and sync logic
+- Consider MMKV migration for performance
 
-## Contributing
+## Firebase Configuration
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+### Firestore Security Rules
 
-### **Development Workflow**
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Apply these rules in the Firebase Console (Firestore → Rules):
 
-## Documentation
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /profiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    match /goals/{uid}/daily/{date} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
 
-- [Architecture](docs/technical/architecture.md) - System architecture and implementation
-- [Performance](docs/technical/performance.md) - Performance guidelines and targets
-- [Security](docs/technical/security.md) - Security measures and guidelines
-- [Contributing](CONTRIBUTING.md) - How to contribute to BrainFit
+See `docs/technical/firebase-rules.md` for more details.
 
 ## Testing
 
@@ -205,9 +227,10 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## Security
 
+- Firebase anonymous authentication
 - Device-based profile isolation
-- Local data encryption (planned)
-- Secure API communication (planned)
+- Firestore security rules (per-user data access)
+- Offline-first architecture (data remains local by default)
 - Privacy-first design approach
 
 ## License
@@ -223,8 +246,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/ajmcginty/brain-fit/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ajmcginty/brain-fit/discussions)
-- **Documentation**: Check the [docs](docs/) folder for detailed technical documentation
+- **Documentation**: See `docs/technical/firebase-rules.md` for Firebase configuration
 
 ---
 
