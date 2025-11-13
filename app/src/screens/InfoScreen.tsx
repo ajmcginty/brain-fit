@@ -1,7 +1,4 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { LearnStackParamList } from '../navigation/LearnNavigator';
 import {
   View,
   StyleSheet,
@@ -9,6 +6,8 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Linking,
+  Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -38,7 +37,6 @@ const CATEGORY_ICONS: Record<ArticleCategory, IconName> = {
 };
 
 export const InfoScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<LearnStackParamList>>();
   const { articles, filters, loading, error, setFilters, clearFilters } = useArticleStore();
 
   const filteredArticles = React.useMemo(() => {
@@ -50,15 +48,31 @@ export const InfoScreen = () => {
         const query = filters.searchQuery.toLowerCase();
         return (
           article.title.toLowerCase().includes(query) ||
-          article.content.toLowerCase().includes(query)
+          article.description.toLowerCase().includes(query)
         );
       }
       return true;
     });
   }, [articles, filters]);
 
-  const handleArticlePress = (article: Article) => {
-    navigation.navigate('ArticleDetail', { article });
+  const handleArticlePress = async (article: Article) => {
+    if (!article.url) {
+      Alert.alert('Error', 'Article URL not found');
+      console.error('Article missing URL:', article);
+      return;
+    }
+
+    try {
+      const supported = await Linking.canOpenURL(article.url);
+      if (supported) {
+        await Linking.openURL(article.url);
+      } else {
+        Alert.alert('Error', `Cannot open URL: ${article.url}`);
+      }
+    } catch (error) {
+      console.error('Error opening article:', error);
+      Alert.alert('Error', `Failed to open article: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const renderCategoryChip = (category: ArticleCategory) => (

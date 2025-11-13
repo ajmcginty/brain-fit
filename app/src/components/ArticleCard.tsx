@@ -49,26 +49,22 @@ export const ArticleCard = ({ article, onPress }: ArticleCardProps) => {
           {article.title}
         </Text>
 
-        {article.summary && (
-          <Text style={styles.summary} numberOfLines={2}>
-            {article.summary}
-          </Text>
-        )}
+        <Text style={styles.summary} numberOfLines={3}>
+          {article.description}
+        </Text>
 
         <View style={styles.footer}>
-          <Text style={styles.meta}>
-            {article.readTime}
-          </Text>
-          {article.sourceUrl && (
-            <View style={styles.sourceIndicator}>
-              <MaterialCommunityIcons 
-                name="link-variant" 
-                size={16} 
-                color={colors.text.secondary}
-              />
-              <Text style={styles.sourceText}>External Source</Text>
-            </View>
+          {article.source && (
+            <Text style={styles.meta}>{article.source}</Text>
           )}
+          <View style={styles.sourceIndicator}>
+            <MaterialCommunityIcons 
+              name="open-in-new" 
+              size={16} 
+              color={colors.primary}
+            />
+            <Text style={styles.linkText}>Read More</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -127,5 +123,10 @@ const styles = StyleSheet.create({
   sourceText: {
     fontSize: typography.sizes.caption,
     color: colors.text.secondary,
+  },
+  linkText: {
+    fontSize: typography.sizes.caption,
+    color: colors.primary,
+    fontWeight: typography.weights.medium,
   },
 });

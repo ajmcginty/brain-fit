@@ -6,9 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useProfileStore } from '../store/profileStore';
 import { colors, spacing, typography } from '../constants/theme';
+import { storage } from '../services/storage';
+import { INITIAL_ARTICLES } from '../constants/articleLinks';
 
 export function ProfileTestScreen() {
   const { profile, isLoading, error, loadProfile, updateProfileData } = useProfileStore();
@@ -62,6 +65,35 @@ export function ProfileTestScreen() {
       console.error('ProfileTestScreen: Error toggling notifications:', err);
       setLocalError(err instanceof Error ? err : new Error('Failed to toggle notifications'));
     }
+  };
+
+  const handleResetArticles = async () => {
+    Alert.alert(
+      'Reset Articles',
+      'This will replace old articles with new article links. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset Now',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              console.log('Resetting articles to new format...');
+              await storage.saveArticles(INITIAL_ARTICLES);
+              console.log('Articles reset successfully');
+              Alert.alert(
+                'Success!', 
+                'Articles reset! Close Expo Go completely and reopen it, then scan the QR code again.',
+                [{ text: 'OK' }]
+              );
+            } catch (err) {
+              console.error('Failed to reset articles:', err);
+              Alert.alert('Error', 'Failed to reset articles: ' + (err instanceof Error ? err.message : 'Unknown'));
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (isLoading && !profile) {
@@ -148,6 +180,13 @@ export function ProfileTestScreen() {
           >
             <Text style={styles.buttonText}>Refresh Profile</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.button, styles.warningButton]} 
+            onPress={handleResetArticles}
+          >
+            <Text style={styles.buttonText}>🔄 Reset Articles</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -208,6 +247,10 @@ const styles = StyleSheet.create({
     color: colors.text.inverse,
     fontSize: typography.sizes.body,
     fontWeight: typography.weights.medium,
+  },
+  warningButton: {
+    backgroundColor: '#f59e0b', // Orange for reset
+    marginTop: spacing.md,
   },
   error: {
     color: colors.error,

@@ -2,20 +2,10 @@ export interface Article {
   id: string;
   title: string;
   category: ArticleCategory;
-  readTime: string;
-  content: string;
-  summary?: string;
+  description: string;  // Short description
+  url: string;          // External link to article
   imageUrl?: string;
-  publishedDate: string;
-  lastUpdated?: string;
-  // Scientific article metadata
-  sourceUrl?: string;
-  doi?: string;
-  authors?: string[];
-  journal?: string;
-  publicationYear?: number;
-  citation?: string;
-  institution?: string;
+  source?: string;      // e.g. "NIH", "Harvard Health"
 }
 
 export type ArticleCategory = 
@@ -37,11 +27,8 @@ export interface ArticleStore {
   loading: boolean;
   error: string | null;
   
-  // Actions
+  // Actions (read-only - articles are external links)
   setArticles: (articles: Article[]) => void;
-  addArticle: (article: Article) => void;
-  updateArticle: (id: string, updates: Partial<Article>) => void;
-  deleteArticle: (id: string) => void;
   setFilters: (filters: ArticleFilters) => void;
   clearFilters: () => void;
 }

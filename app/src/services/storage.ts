@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DailyGoal, GoalStats } from '../types/goals';
 import { Article } from '../types/articles';
 import { StorageError } from '../utils/errors';
-import { INITIAL_ARTICLES } from '../constants/hybridArticles';
+import { INITIAL_ARTICLES } from '../constants/articleLinks';
 import { getProfileStorageKey } from './profileService';
 
 export const StorageKeys = {
