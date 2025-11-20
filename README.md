@@ -49,8 +49,9 @@ The application focuses on five essential pillars of cognitive health:
 - Expert-reviewed health resources
 
 **Technical Features**
-- Robust offline functionality
-- Device-based profile management
+- Secure email/password authentication
+- Robust offline functionality with cloud sync
+- Personalized user profiles and progress tracking
 - Optimized performance and response times
 - Secure data handling and storage
 
@@ -83,19 +84,29 @@ The application focuses on five essential pillars of cognitive health:
    npm install
    ```
 
-3. **Set up Firebase environment variables**
+3. **Set up Firebase**
    
-   In your terminal (before running the app), export these variables:
-   ```bash
-   export EXPO_PUBLIC_FIREBASE_API_KEY="your-api-key"
-   export EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
-   export EXPO_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
-   export EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
-   export EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
-   export EXPO_PUBLIC_FIREBASE_APP_ID="your-app-id"
-   ```
+   a. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
    
-   Get these values from your Firebase Console (Project Settings → Web App).
+   b. Enable Email/Password authentication:
+      - Go to Authentication → Sign-in method
+      - Enable "Email/Password" provider
+   
+   c. Set up Firestore database:
+      - Create a Firestore database
+      - Apply the security rules from `docs/technical/firebase-rules.md`
+   
+   d. Set environment variables (before running the app):
+      ```bash
+      export EXPO_PUBLIC_FIREBASE_API_KEY="your-api-key"
+      export EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
+      export EXPO_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+      export EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+      export EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
+      export EXPO_PUBLIC_FIREBASE_APP_ID="your-app-id"
+      ```
+      
+      Get these values from Firebase Console (Project Settings → Web App).
 
 4. **Start the development server**
    ```bash
@@ -106,6 +117,12 @@ The application focuses on five essential pillars of cognitive health:
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
    - Scan QR code with Expo Go app on your device
+
+6. **Create your account**
+   - On first launch, you'll see the sign-in screen
+   - Tap "Sign Up" to create a new account
+   - Enter your email, password, and optional name
+   - Start tracking your cognitive wellness journey!
 
 ## Project Structure
 
@@ -134,23 +151,25 @@ BrainFit/
 - **State Management**: Zustand
 - **Navigation**: React Navigation v7
 - **Local Storage**: AsyncStorage
-- **Backend**: Firebase (Anonymous Auth + Firestore)
+- **Backend**: Firebase (Email/Password Auth + Firestore)
 - **UI Components**: Custom components with consistent theming
 - **Build Tool**: Expo CLI
 
 ## Application Architecture
 
 ### **Core Components**
-- **Profile System**: Device-based user profiles with Firebase anonymous authentication
+- **Authentication**: Email/password authentication with Firebase Auth
+- **Profile System**: User profiles with cloud sync and preferences
 - **Goal Tracking**: Daily goal management across 5 health pillars with cloud sync
 - **Progress Visualization**: Interactive progress rings and calendars
 - **Content Management**: Curated article links to external health resources
 - **Storage Service**: AsyncStorage for local data with Firebase Firestore backup
 
 ### **State Management**
-- **Zustand Stores**: Separate stores for profiles, goals, articles, and authentication
+- **Zustand Stores**: Separate stores for authentication, profiles, goals, and articles
+- **Auth State**: Real-time authentication state management with Firebase listeners
 - **Persistent State**: Automatic state persistence across app sessions
-- **Cloud Sync**: One-way sync (app → cloud) on goal changes, pull and merge on startup
+- **Cloud Sync**: Bi-directional sync between local storage and Firestore
 
 ## Development
 
@@ -175,11 +194,12 @@ npm run web        # Run in web browser
 
 ### Completed Features
 - ✅ Core infrastructure (Expo, TypeScript, Navigation)
+- ✅ Email/password authentication with sign up, sign in, and password reset
+- ✅ Authentication gating (must sign in to access app)
 - ✅ Goal tracking system with progress visualization
 - ✅ Educational content with external article links
-- ✅ Profile system with device-based authentication
-- ✅ Firebase anonymous authentication
-- ✅ Firestore cloud sync for goals (offline-first)
+- ✅ Profile screen with user stats and settings
+- ✅ Firestore cloud sync for goals and profiles
 - ✅ UI/UX with consistent theming
 
 ### Future Enhancements
@@ -227,10 +247,12 @@ See `docs/technical/firebase-rules.md` for more details.
 
 ## Security
 
-- Firebase anonymous authentication
-- Device-based profile isolation
-- Firestore security rules (per-user data access)
-- Offline-first architecture (data remains local by default)
+- Firebase email/password authentication
+- Per-user data isolation with Firestore security rules
+- Secure password handling (minimum 6 characters)
+- Password reset functionality via email
+- Firestore security rules enforcing user ownership
+- Offline-first architecture with secure cloud sync
 - Privacy-first design approach
 
 ## License
@@ -252,4 +274,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 *Dedicated to advancing cognitive health and wellness.*
 
-*Last Updated: January 2025*
+*Last Updated: November 2025*
