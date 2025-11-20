@@ -248,12 +248,14 @@ See `docs/technical/firebase-rules.md` for more details.
 ## Security
 
 - Firebase email/password authentication
+- **Per-user data isolation**: All local storage is scoped by Firebase UID, ensuring complete data separation between user accounts on the same device
 - Per-user data isolation with Firestore security rules
 - Secure password handling (minimum 6 characters)
 - Password reset functionality via email
 - Firestore security rules enforcing user ownership
 - Offline-first architecture with secure cloud sync
 - Privacy-first design approach
+- Automatic store cleanup on logout prevents data leakage between accounts
 
 ## License
 
