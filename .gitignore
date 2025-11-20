@@ -15,6 +15,7 @@
 .env.development
 .env.test
 .env.production
+start-dev.sh
 
 # Firebase
 .firebase/
