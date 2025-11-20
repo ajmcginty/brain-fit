@@ -20,19 +20,38 @@ export const calculateCompletionRate = (goals: DailyGoal[], days: number): numbe
 };
 
 export const calculateStreak = (goals: DailyGoal[]): number => {
-  let streak = 0;
+  if (goals.length === 0) return 0;
+  
+  // Sort by date descending (most recent first)
   const sortedGoals = [...goals].sort((a, b) => 
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-
+  
+  let streak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
   for (const goal of sortedGoals) {
-    if (isGoalComplete(goal)) {
-      streak++;
+    const goalDate = new Date(goal.date);
+    goalDate.setHours(0, 0, 0, 0);
+    
+    // Calculate how many days ago this goal was from today
+    const daysDiff = Math.floor((today.getTime() - goalDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Check if this goal is for the expected consecutive day
+    if (daysDiff === streak) {
+      // Check if all 5 goals were completed this day
+      if (isGoalComplete(goal)) {
+        streak++;
+      } else {
+        break; // Streak is broken
+      }
     } else {
+      // Gap in dates, streak is broken
       break;
     }
   }
-
+  
   return streak;
 };
 

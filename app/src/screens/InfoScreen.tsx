@@ -12,6 +12,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArticleList } from '../components/ArticleList';
+import { HelpButton } from '../components/HelpButton';
 import { useArticleStore } from '../store/articleStore';
 import { Article, ArticleCategory } from '../types/articles';
 import { colors, typography, spacing, layout, shadows } from '../constants/theme';
@@ -132,26 +133,33 @@ export const InfoScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Learn & Discover</Text>
-        <Text style={styles.subtitle}>
-          Explore articles and research about brain health
-        </Text>
-      </View>
-
       <ArticleList
         articles={filteredArticles}
         onArticlePress={handleArticlePress}
         ListHeaderComponent={
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.categoryList}
-            contentContainerStyle={styles.categoryListContent}
-            data={Object.keys(CATEGORY_LABELS) as ArticleCategory[]}
-            renderItem={({ item }) => renderCategoryChip(item)}
-            keyExtractor={(item) => item}
-          />
+          <>
+            <View style={styles.header}>
+              <Text style={styles.title}>Learn About Brain Health</Text>
+              <Text style={styles.subtitle}>
+                Read helpful articles and research about keeping your brain healthy and active
+              </Text>
+              
+              <HelpButton 
+                helpText="This page contains articles and information to help you learn more about brain health. You can browse all articles or filter by topic using the colorful buttons below (like Exercise, Brain Training, Social Activity, etc.). Tap any article to read the full content. Use this section to discover new ways to keep your mind sharp!"
+                style={styles.helpButton}
+              />
+            </View>
+            
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.categoryList}
+              contentContainerStyle={styles.categoryListContent}
+              data={Object.keys(CATEGORY_LABELS) as ArticleCategory[]}
+              renderItem={({ item }) => renderCategoryChip(item)}
+              keyExtractor={(item) => item}
+            />
+          </>
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -178,20 +186,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   header: {
-    padding: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 12,
     backgroundColor: colors.background.primary,
-    ...shadows.small,
   },
   title: {
-    fontSize: typography.sizes.title,
+    fontSize: 28,
     fontWeight: typography.weights.bold,
     color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: typography.sizes.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    color: '#666666',
+    lineHeight: 22,
+    marginBottom: 10,
+  },
+  helpButton: {
+    marginBottom: 0,
   },
   categoryList: {
     maxHeight: 56,

@@ -7,12 +7,13 @@ export type GoalIcon = 'run' | 'brain' | 'account-group' | 'sleep' | 'food-apple
 
 interface GoalCheckboxProps {
   label: string;
+  description?: string;
   isChecked: boolean;
   onToggle: () => void;
   icon: GoalIcon;
 }
 
-export const GoalCheckbox = ({ label, isChecked, onToggle, icon }: GoalCheckboxProps) => {
+export const GoalCheckbox = ({ label, description, isChecked, onToggle, icon }: GoalCheckboxProps) => {
   return (
     <Pressable
       style={[
@@ -28,18 +29,26 @@ export const GoalCheckbox = ({ label, isChecked, onToggle, icon }: GoalCheckboxP
     >
       <View style={[styles.checkbox, isChecked && styles.checked]}>
         {isChecked && (
-          <MaterialCommunityIcons name="check" size={20} color={colors.text.inverse} />
+          <MaterialCommunityIcons name="check" size={24} color={colors.text.inverse} />
         )}
       </View>
       <View style={styles.labelContainer}>
         <MaterialCommunityIcons 
           name={icon} 
-          size={24} 
+          size={32} 
           color={isChecked ? colors.text.disabled : colors.primary}
           accessibilityRole="image" as AccessibilityRole
           accessibilityLabel={`${label} icon`}
+          style={styles.icon}
         />
-        <Text style={[styles.label, isChecked && styles.labelCompleted]}>{label}</Text>
+        <View style={styles.textContainer}>
+          <Text style={[styles.label, isChecked && styles.labelCompleted]}>{label}</Text>
+          {description && (
+            <Text style={[styles.description, isChecked && styles.descriptionCompleted]}>
+              {description}
+            </Text>
+          )}
+        </View>
       </View>
     </Pressable>
   );
@@ -49,7 +58,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: layout.containerPadding,
+    padding: 20,
     backgroundColor: colors.background.primary,
     borderRadius: layout.borderRadius.lg,
     marginVertical: layout.touchableGap,
@@ -60,12 +69,12 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   checkbox: {
-    width: layout.touchableMinHeight * 0.6,
-    height: layout.touchableMinHeight * 0.6,
+    width: 32,
+    height: 32,
     borderRadius: layout.borderRadius.sm,
     borderWidth: 2,
     borderColor: colors.primary,
-    marginRight: layout.touchableGap * 1.5,
+    marginRight: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -74,16 +83,32 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flex: 1,
   },
+  icon: {
+    marginTop: 4,
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
   label: {
-    fontSize: typography.sizes.bodyLarge,
-    marginLeft: layout.touchableGap,
+    fontSize: typography.sizes.subtitle,
     color: colors.text.primary,
+    fontWeight: '600',
   },
   labelCompleted: {
     textDecorationLine: 'line-through',
     color: colors.text.secondary,
+  },
+  description: {
+    fontSize: typography.sizes.subtitle,
+    color: '#555555',
+    marginTop: 8,
+    lineHeight: 28,
+  },
+  descriptionCompleted: {
+    color: colors.text.disabled,
   },
 });

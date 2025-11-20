@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
 import { useGoalsStore } from '../store/goalsStore';
+import { calculateStreak } from '../utils/goalUtils';
 import { colors, spacing, typography, layout } from '../constants/theme';
 
 export function ProfileScreen() {
@@ -25,43 +26,8 @@ export function ProfileScreen() {
     return count + completedCount;
   }, 0);
   
-  // Calculate current streak
-  const calculateStreak = () => {
-    if (dailyGoals.length === 0) return 0;
-    
-    // Sort by date descending
-    const sortedGoals = [...dailyGoals].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    
-    let streak = 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    for (const goal of sortedGoals) {
-      const goalDate = new Date(goal.date);
-      goalDate.setHours(0, 0, 0, 0);
-      
-      const daysDiff = Math.floor((today.getTime() - goalDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff === streak) {
-        // Check if at least one goal was completed this day
-        const hasCompletedGoal = [goal.exercise, goal.cognitive, goal.social, goal.sleep, goal.diet]
-          .some(Boolean);
-        if (hasCompletedGoal) {
-          streak++;
-        } else {
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  };
-  
-  const currentStreak = calculateStreak();
+  // Calculate current streak (requires all 5 goals to be completed)
+  const currentStreak = calculateStreak(dailyGoals);
   const daysActive = dailyGoals.length;
   
   const handleSignOut = () => {
