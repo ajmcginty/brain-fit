@@ -52,6 +52,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       console.log('[authStore] Logging out');
       await firebaseSignOut();
+      
+      // Clear all stores to prevent data leaking between accounts
+      console.log('[authStore] Clearing all store data');
+      const { useGoalsStore } = await import('./goalsStore');
+      const { useArticleStore } = await import('./articleStore');
+      const { useProfileStore } = await import('./profileStore');
+      const { resetProfileStorage } = await import('../services/storage');
+      
+      useGoalsStore.getState().reset();
+      useArticleStore.getState().reset();
+      useProfileStore.getState().reset();
+      resetProfileStorage();
+      
       set({ user: null, isAuthenticated: false, error: null });
       console.log('[authStore] Logout successful');
     } catch (error) {
@@ -79,7 +92,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
     
     // Subscribe to auth state changes
-    subscribeAuth((firebaseUser) => {
+    subscribeAuth(async (firebaseUser) => {
       if (firebaseUser) {
         console.log('[authStore] Auth state changed: user logged in:', firebaseUser.uid);
         const user: User = {
@@ -90,6 +103,22 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user, isAuthenticated: true, isLoading: false });
       } else {
         console.log('[authStore] Auth state changed: user logged out');
+        
+        // Clear all stores to prevent data leaking between accounts
+        try {
+          const { useGoalsStore } = await import('./goalsStore');
+          const { useArticleStore } = await import('./articleStore');
+          const { useProfileStore } = await import('./profileStore');
+          const { resetProfileStorage } = await import('../services/storage');
+          
+          useGoalsStore.getState().reset();
+          useArticleStore.getState().reset();
+          useProfileStore.getState().reset();
+          resetProfileStorage();
+        } catch (error) {
+          console.error('[authStore] Error clearing stores on logout:', error);
+        }
+        
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
     });

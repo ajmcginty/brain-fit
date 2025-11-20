@@ -25,6 +25,17 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
   clearFilters: () => {
     set({ filters: INITIAL_FILTERS });
   },
+
+  // Reset store (for logout)
+  reset: () => {
+    console.log('[articleStore] Resetting store');
+    set({
+      articles: [],
+      filters: INITIAL_FILTERS,
+      loading: false,
+      error: null,
+    });
+  },
 }));
 
 // Initialize store with data from local storage (article links)

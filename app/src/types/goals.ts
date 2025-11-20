@@ -28,4 +28,6 @@ export interface GoalsState {
   updateStats: () => void;
   getCompletionRate: (days: number) => number;
   getCurrentStreak: () => number;
+  // Store management
+  reset: () => void;
 }

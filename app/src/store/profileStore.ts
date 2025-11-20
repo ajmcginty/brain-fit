@@ -19,6 +19,7 @@ interface ProfileStore extends ProfileState {
   validateProfile: () => Promise<boolean>;
   migrateData: () => Promise<void>;
   recoverFromError: () => Promise<void>;
+  reset: () => void;
 }
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
@@ -193,5 +194,15 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       });
       throw error;
     }
+  },
+
+  // Reset store (for logout)
+  reset: () => {
+    console.log('[profileStore] Resetting store');
+    set({
+      profile: null,
+      isLoading: false,
+      error: null,
+    });
   },
 }));

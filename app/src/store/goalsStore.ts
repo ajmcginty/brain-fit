@@ -139,6 +139,15 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
     const { stats } = get();
     return stats.streak;
   },
+
+  // Reset store (for logout)
+  reset: () => {
+    console.log('[goalsStore] Resetting store');
+    set({
+      dailyGoals: [],
+      stats: INITIAL_STATS,
+    });
+  },
 }));
 
 // Initialize store with data from storage and cloud

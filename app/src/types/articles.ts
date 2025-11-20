@@ -31,4 +31,6 @@ export interface ArticleStore {
   setArticles: (articles: Article[]) => void;
   setFilters: (filters: ArticleFilters) => void;
   clearFilters: () => void;
+  // Store management
+  reset: () => void;
 }

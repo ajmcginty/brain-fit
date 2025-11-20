@@ -31,6 +31,14 @@ export function initializeProfileStorage(deviceId: string): void {
 }
 
 /**
+ * Reset profile-aware storage keys (for logout)
+ */
+export function resetProfileStorage(): void {
+  profileStorageKeys = null;
+  console.log('Profile storage keys cleared');
+}
+
+/**
  * Get the appropriate storage key (profile-aware or legacy)
  */
 function getStorageKey(key: string): string {
