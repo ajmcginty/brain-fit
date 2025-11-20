@@ -1,22 +1,10 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
-  setIsAuthenticated: (value: boolean) => void;
-  logout: () => void;
-}
+// Auth types are now in authStore.ts
 
 export interface DailyGoal {
   id: string;
   date: string;
   exercise: boolean;
-  cognition: boolean;
+  cognitive: boolean;
   social: boolean;
   sleep: boolean;
   diet: boolean;
