@@ -6,52 +6,54 @@ import { RootNavigator } from './src/navigation';
 import { initializeGoalsStore } from './src/store/goalsStore';
 import { initializeArticleStore } from './src/store/articleStore';
 import { useProfileStore } from './src/store/profileStore';
+import { useAuthStore } from './src/store/authStore';
 import { LoadingScreen } from './src/components/LoadingScreen';
-import { ensureAuthWithDevice } from './src/services/cloudAuth';
 
 export default function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const { loadProfile } = useProfileStore();
+  const { initialize: initializeAuth, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // First, ensure profile is loaded
-        console.log('[init] loadProfile: start');
-        await loadProfile();
-        console.log('[init] loadProfile: done');
-        // Ensure authenticated user (anonymous) and upsert profile doc (with timeout)
-        const withTimeout = <T,>(p: Promise<T>, ms = 5000) =>
-          Promise.race<T>([
-            p,
-            new Promise<T>((_, rej) => setTimeout(() => rej(new Error('auth timeout')), ms)) as Promise<T>,
-          ]);
-        console.log('[init] ensureAuthWithDevice: start');
-        try {
-          await withTimeout(ensureAuthWithDevice(), 5000);
-          console.log('[init] ensureAuthWithDevice: done');
-        } catch (e) {
-          console.warn('[init] ensureAuthWithDevice failed/timeout, continuing offline', e);
-        }
+        console.log('[App] Starting initialization...');
         
-        // Initialize other stores
-        console.log('[init] initialize stores: start');
-        await Promise.all([
-          initializeGoalsStore(),
-          initializeArticleStore(),
-        ]);
-        console.log('[init] initialize stores: done');
-
+        // Initialize auth store (sets up Firebase auth listener)
+        initializeAuth();
+        
         setIsInitialized(true);
+        console.log('[App] App initialization complete');
       } catch (err) {
-        console.error('Error initializing app:', err);
-        // Even on error, we should show the app as it might have partial functionality
+        console.error('[App] Error initializing app:', err);
         setIsInitialized(true);
       }
     };
     
     initializeApp();
-  }, []); // Remove dependencies that cause loops
+  }, []);
+
+  // Load user-specific data when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('[App] User authenticated, loading user data...');
+      
+      const loadUserData = async () => {
+        try {
+          await loadProfile();
+          await Promise.all([
+            initializeGoalsStore(),
+            initializeArticleStore(),
+          ]);
+          console.log('[App] User data loaded successfully');
+        } catch (error) {
+          console.error('[App] Error loading user data:', error);
+        }
+      };
+      
+      loadUserData();
+    }
+  }, [isAuthenticated]);
 
   // Show loading screen while initializing
   if (!isInitialized) {
