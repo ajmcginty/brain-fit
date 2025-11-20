@@ -20,14 +20,15 @@ let profileStorageKeys: {
 
 /**
  * Initialize profile-aware storage keys
+ * @param userKey - Unique identifier for the user (Firebase UID or device ID)
  */
-export function initializeProfileStorage(deviceId: string): void {
+export function initializeProfileStorage(userKey: string): void {
   profileStorageKeys = {
-    DAILY_GOALS: getProfileStorageKey(deviceId, 'daily_goals'),
-    GOAL_STATS: getProfileStorageKey(deviceId, 'goal_stats'),
-    ARTICLES: getProfileStorageKey(deviceId, 'articles'),
+    DAILY_GOALS: getProfileStorageKey(userKey, 'daily_goals'),
+    GOAL_STATS: getProfileStorageKey(userKey, 'goal_stats'),
+    ARTICLES: getProfileStorageKey(userKey, 'articles'),
   };
-  console.log('Profile storage keys initialized for device:', deviceId);
+  console.log('Profile storage keys initialized for user:', userKey);
 }
 
 /**

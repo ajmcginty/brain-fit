@@ -10,7 +10,6 @@ import {
   needsDataRestructuring,
   cleanupLegacyStorage,
 } from '../services/profileService';
-import { initializeProfileStorage } from '../services/storage';
 
 interface ProfileStore extends ProfileState {
   initializeProfile: () => Promise<void>;
@@ -41,8 +40,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       const profile = await createProfile();
       console.log('Profile initialized:', profile);
       
-      // Initialize profile-aware storage
-      initializeProfileStorage(profile.deviceId);
+      // Note: Storage is initialized with Firebase UID in App.tsx
       
       // If restructuring is needed, do it now
       if (needsRestructuring) {
@@ -74,8 +72,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         const newProfile = await createProfile();
         console.log('New profile created:', newProfile);
         
-        // Initialize profile-aware storage
-        initializeProfileStorage(newProfile.deviceId);
+        // Note: Storage is initialized with Firebase UID in App.tsx
         
         set({ profile: newProfile, isLoading: false });
         return;
@@ -89,8 +86,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         if (recoveredProfile) {
           console.log('Profile recovered successfully');
           
-          // Initialize profile-aware storage
-          initializeProfileStorage(recoveredProfile.deviceId);
+          // Note: Storage is initialized with Firebase UID in App.tsx
           
           set({ profile: recoveredProfile, isLoading: false });
           return;
@@ -99,8 +95,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         }
       }
 
-      // Initialize profile-aware storage
-      initializeProfileStorage(profile.deviceId);
+      // Note: Storage is initialized with Firebase UID in App.tsx
       
       set({ profile, isLoading: false });
     } catch (error) {

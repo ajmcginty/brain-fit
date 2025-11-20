@@ -40,6 +40,14 @@ export default function App() {
       
       const loadUserData = async () => {
         try {
+          // Get Firebase UID and initialize storage with it
+          const { user } = useAuthStore.getState();
+          if (user?.uid) {
+            console.log('[App] Initializing storage for user:', user.uid);
+            const { initializeProfileStorage } = await import('./src/services/storage');
+            initializeProfileStorage(user.uid);
+          }
+          
           await loadProfile();
           await Promise.all([
             initializeGoalsStore(),

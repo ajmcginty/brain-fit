@@ -86,6 +86,18 @@ export const useAuthStore = create<AuthState>((set) => ({
         email: currentUser.email!,
         name: currentUser.displayName || undefined,
       };
+      
+      // Initialize storage with Firebase UID
+      (async () => {
+        try {
+          const { initializeProfileStorage } = await import('../services/storage');
+          initializeProfileStorage(currentUser.uid);
+          console.log('[authStore] Storage initialized for existing user:', currentUser.uid);
+        } catch (error) {
+          console.error('[authStore] Error initializing storage for existing user:', error);
+        }
+      })();
+      
       set({ user, isAuthenticated: true, isLoading: false });
     } else {
       set({ isLoading: false });
@@ -100,6 +112,16 @@ export const useAuthStore = create<AuthState>((set) => ({
           email: firebaseUser.email!,
           name: firebaseUser.displayName || undefined,
         };
+        
+        // Initialize storage with Firebase UID for this user
+        try {
+          const { initializeProfileStorage } = await import('../services/storage');
+          initializeProfileStorage(firebaseUser.uid);
+          console.log('[authStore] Storage initialized for user:', firebaseUser.uid);
+        } catch (error) {
+          console.error('[authStore] Error initializing storage:', error);
+        }
+        
         set({ user, isAuthenticated: true, isLoading: false });
       } else {
         console.log('[authStore] Auth state changed: user logged out');
