@@ -70,3 +70,105 @@ export const createEmptyGoal = (date: string): Omit<DailyGoal, 'id'> => {
     updatedAt: new Date().toISOString(),
   };
 };
+
+// Weekly summary utility functions
+
+export const getWeekDateRange = (date: Date): { start: string; end: string } => {
+  const d = new Date(date);
+  const day = d.getDay();
+  
+  // Week runs Sunday (0) to Saturday (6)
+  // Calculate Sunday of the week
+  const diff = day; // days since Sunday
+  const sunday = new Date(d);
+  sunday.setDate(d.getDate() - diff);
+  sunday.setHours(0, 0, 0, 0);
+  
+  const saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
+  saturday.setHours(23, 59, 59, 999);
+  
+  return {
+    start: formatDate(sunday),
+    end: formatDate(saturday),
+  };
+};
+
+export const getPreviousWeekDateRange = (): { start: string; end: string } => {
+  const today = new Date();
+  // Go back 7 days to get last week's Sunday
+  const lastSunday = new Date(today);
+  lastSunday.setDate(today.getDate() - 7);
+  lastSunday.setHours(0, 0, 0, 0);
+  
+  // Find the Sunday of that week
+  const day = lastSunday.getDay();
+  const diff = day; // days since Sunday
+  const weekStart = new Date(lastSunday);
+  weekStart.setDate(lastSunday.getDate() - diff);
+  weekStart.setHours(0, 0, 0, 0);
+  
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+  
+  return {
+    start: formatDate(weekStart),
+    end: formatDate(weekEnd),
+  };
+};
+
+export const isSunday = (date: Date = new Date()): boolean => {
+  return date.getDay() === 0;
+};
+
+export const calculateWeeklyExerciseTotal = (goals: DailyGoal[]): number => {
+  return goals.reduce((total, goal) => {
+    return total + (goal.exercise && goal.exerciseMinutes ? goal.exerciseMinutes : 0);
+  }, 0);
+};
+
+export const calculateAverageCognitiveMinutes = (goals: DailyGoal[]): number => {
+  const goalsWithData = goals.filter(g => g.cognitive && g.cognitiveMinutes !== undefined);
+  if (goalsWithData.length === 0) return 0;
+  
+  const total = goalsWithData.reduce((sum, goal) => sum + (goal.cognitiveMinutes || 0), 0);
+  return total / goalsWithData.length;
+};
+
+export const calculateTotalNewPeople = (goals: DailyGoal[]): number => {
+  return goals.reduce((total, goal) => {
+    return total + (goal.social && goal.socialNewPeople ? goal.socialNewPeople : 0);
+  }, 0);
+};
+
+export const calculateAverageDietRating = (goals: DailyGoal[]): number => {
+  const goalsWithData = goals.filter(g => g.diet && g.dietRating !== undefined);
+  if (goalsWithData.length === 0) return 0;
+  
+  const total = goalsWithData.reduce((sum, goal) => sum + (goal.dietRating || 0), 0);
+  return total / goalsWithData.length;
+};
+
+export const calculateAverageSleep = (goals: DailyGoal[]): number => {
+  const goalsWithData = goals.filter(g => g.sleep && g.sleepHours !== undefined);
+  if (goalsWithData.length === 0) return 0;
+  
+  const total = goalsWithData.reduce((sum, goal) => sum + (goal.sleepHours || 0), 0);
+  return total / goalsWithData.length;
+};
+
+export const compareWeeks = (current: number, previous: number) => {
+  const difference = current - previous;
+  const percentChange = previous === 0 ? 
+    (current > 0 ? 100 : 0) : 
+    ((difference / previous) * 100);
+  
+  return {
+    current,
+    previous,
+    difference,
+    percentChange,
+    improved: difference > 0,
+  };
+};

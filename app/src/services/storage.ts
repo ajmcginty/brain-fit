@@ -9,6 +9,7 @@ export const StorageKeys = {
   DAILY_GOALS: 'daily_goals',
   GOAL_STATS: 'goal_stats',
   ARTICLES: 'articles',
+  WEEKLY_SUMMARY_VIEWED: 'weekly_summary_viewed',
 } as const;
 
 // Profile-aware storage keys (will be set dynamically)
@@ -16,6 +17,7 @@ let profileStorageKeys: {
   DAILY_GOALS: string;
   GOAL_STATS: string;
   ARTICLES: string;
+  WEEKLY_SUMMARY_VIEWED: string;
 } | null = null;
 
 /**
@@ -27,6 +29,7 @@ export function initializeProfileStorage(userKey: string): void {
     DAILY_GOALS: getProfileStorageKey(userKey, 'daily_goals'),
     GOAL_STATS: getProfileStorageKey(userKey, 'goal_stats'),
     ARTICLES: getProfileStorageKey(userKey, 'articles'),
+    WEEKLY_SUMMARY_VIEWED: getProfileStorageKey(userKey, 'weekly_summary_viewed'),
   };
   console.log('Profile storage keys initialized for user:', userKey);
 }
@@ -52,6 +55,8 @@ function getStorageKey(key: string): string {
         return profileStorageKeys.GOAL_STATS;
       case StorageKeys.ARTICLES:
         return profileStorageKeys.ARTICLES;
+      case StorageKeys.WEEKLY_SUMMARY_VIEWED:
+        return profileStorageKeys.WEEKLY_SUMMARY_VIEWED;
       default:
         return key;
     }
@@ -221,6 +226,34 @@ export const storage = {
         'Failed to save articles',
         'write',
         StorageKeys.ARTICLES,
+        error
+      );
+    }
+  },
+
+  // Weekly summary methods
+  async getWeeklySummaryViewed(): Promise<string[]> {
+    try {
+      const viewed = await this.get<string[]>(StorageKeys.WEEKLY_SUMMARY_VIEWED);
+      return viewed || [];
+    } catch (error) {
+      console.error('Error getting weekly summary viewed', error);
+      return [];
+    }
+  },
+
+  async saveWeeklySummaryViewed(viewed: string[]): Promise<void> {
+    try {
+      await this.set(StorageKeys.WEEKLY_SUMMARY_VIEWED, viewed);
+    } catch (error) {
+      console.error('Error saving weekly summary viewed', error);
+      if (error instanceof StorageError) {
+        throw error;
+      }
+      throw new StorageError(
+        'Failed to save weekly summary viewed',
+        'write',
+        StorageKeys.WEEKLY_SUMMARY_VIEWED,
         error
       );
     }

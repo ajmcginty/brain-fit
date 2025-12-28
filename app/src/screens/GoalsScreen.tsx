@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GoalCheckbox } from '../components/GoalCheckbox';
 import type { GoalIcon } from '../components/GoalCheckbox';
 import { HelpButton } from '../components/HelpButton';
+import { GoalDetailModal } from '../components/GoalDetailModal';
 import { useGoalsStore } from '../store/goalsStore';
-import { createEmptyGoal, formatDate } from '../utils/goalUtils';
+import { createEmptyGoal, formatDate, getWeekDateRange, calculateWeeklyExerciseTotal } from '../utils/goalUtils';
+import { DietRating } from '../types/goals';
 
 const GOAL_ICONS = {
   exercise: 'run',
@@ -31,10 +33,20 @@ const GOAL_DESCRIPTIONS = {
   diet: 'This can be eating fruits and vegetables, choosing whole grains, drinking plenty of water, and limiting processed foods and sugary drinks.',
 };
 
+type GoalType = 'exercise' | 'cognitive' | 'social' | 'diet' | 'sleep';
+
 export const GoalsScreen = () => {
-  const { addGoal, updateGoal, getGoalByDate } = useGoalsStore();
+  const { addGoal, updateGoal, getGoalByDate, getWeeklyGoals } = useGoalsStore();
   const [currentDate, setCurrentDate] = useState<string>(formatDate(new Date()));
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedGoalType, setSelectedGoalType] = useState<GoalType | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const todayGoal = getGoalByDate(currentDate);
+
+  // Calculate weekly exercise total for progress tracking
+  const { start } = getWeekDateRange(new Date());
+  const weeklyGoals = getWeeklyGoals(start);
+  const weeklyExerciseTotal = calculateWeeklyExerciseTotal(weeklyGoals);
 
   useEffect(() => {
     if (!todayGoal) {
@@ -59,11 +71,79 @@ export const GoalsScreen = () => {
     return () => clearInterval(intervalId);
   }, [currentDate, addGoal, getGoalByDate]);
 
-  const handleToggleGoal = (type: keyof typeof GOAL_ICONS) => {
+  const handleToggleGoal = (type: GoalType) => {
     if (!todayGoal) return;
+
+    const isCurrentlyChecked = todayGoal[type];
+
+    if (isCurrentlyChecked) {
+      // Goal is already checked - open modal in edit mode
+      setSelectedGoalType(type);
+      setIsEditMode(true);
+      setModalVisible(true);
+    } else {
+      // Goal is not checked - open modal to collect data
+      setSelectedGoalType(type);
+      setIsEditMode(false);
+      setModalVisible(true);
+    }
+  };
+
+  const handleSaveGoalDetails = (data: {
+    exerciseMinutes?: number;
+    cognitiveMinutes?: number;
+    socialNewPeople?: number;
+    dietRating?: DietRating;
+    sleepHours?: number;
+  }) => {
+    if (!todayGoal || !selectedGoalType) return;
+
+    // Mark goal as checked and save the detailed data
     updateGoal(todayGoal.id, {
-      [type]: !todayGoal[type],
+      [selectedGoalType]: true,
+      ...data,
     });
+
+    setModalVisible(false);
+    setSelectedGoalType(null);
+    setIsEditMode(false);
+  };
+
+  const handleCancelGoalDetails = () => {
+    setModalVisible(false);
+    setSelectedGoalType(null);
+    setIsEditMode(false);
+  };
+
+  const handleUncheckGoal = () => {
+    if (!todayGoal || !selectedGoalType) return;
+
+    // Clear the goal checkbox and all associated data
+    updateGoal(todayGoal.id, {
+      [selectedGoalType]: false,
+      // Clear all related metrics
+      ...(selectedGoalType === 'exercise' && { exerciseMinutes: undefined }),
+      ...(selectedGoalType === 'cognitive' && { cognitiveMinutes: undefined }),
+      ...(selectedGoalType === 'social' && { socialNewPeople: undefined }),
+      ...(selectedGoalType === 'diet' && { dietRating: undefined }),
+      ...(selectedGoalType === 'sleep' && { sleepHours: undefined }),
+    });
+
+    setModalVisible(false);
+    setSelectedGoalType(null);
+    setIsEditMode(false);
+  };
+
+  const getInitialValues = () => {
+    if (!todayGoal || !selectedGoalType || !isEditMode) return undefined;
+
+    return {
+      exerciseMinutes: todayGoal.exerciseMinutes,
+      cognitiveMinutes: todayGoal.cognitiveMinutes,
+      socialNewPeople: todayGoal.socialNewPeople,
+      dietRating: todayGoal.dietRating,
+      sleepHours: todayGoal.sleepHours,
+    };
   };
 
   if (!todayGoal) {
@@ -79,16 +159,16 @@ export const GoalsScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <Text style={styles.title}>Today's Brain Health Goals</Text>
-          <Text style={styles.subtitle}>Check off each activity as you complete it. Tap each goal box to mark it as done. Goals move to the bottom of the list as you complete them.</Text>
+          <Text style={styles.subtitle}>Tap each goal to add details and mark it as complete. Tap again to edit your entry.</Text>
           
           <HelpButton 
-            helpText="This page shows your 5 daily brain health goals. Simply tap the checkbox next to each activity when you complete it. The goals include physical exercise, mental challenges, social activities, good sleep, and healthy eating. Try to complete all 5 goals each day to keep your brain healthy and build a strong streak!"
+            helpText="This page shows your 5 daily brain health goals. Tap any goal to enter details about that activity. You'll be asked for specific information like minutes exercised, hours slept, etc. This helps track your progress over time. Try to complete all 5 goals each day to keep your brain healthy and build a strong streak!"
             style={styles.helpButton}
           />
         </View>
         
         <View style={styles.goalsContainer}>
-          {([...Object.keys(GOAL_ICONS)] as Array<keyof typeof GOAL_ICONS>)
+          {([...Object.keys(GOAL_ICONS)] as Array<GoalType>)
             .sort((a, b) => Number(!!todayGoal?.[a]) - Number(!!todayGoal?.[b]))
             .map((type) => (
             <GoalCheckbox
@@ -108,6 +188,19 @@ export const GoalsScreen = () => {
           </Text>
         </View>
       </ScrollView>
+
+      {selectedGoalType && (
+        <GoalDetailModal
+          visible={modalVisible}
+          goalType={selectedGoalType}
+          isEditMode={isEditMode}
+          weeklyExerciseTotal={weeklyExerciseTotal}
+          initialValues={getInitialValues()}
+          onSave={handleSaveGoalDetails}
+          onUncheck={handleUncheckGoal}
+          onCancel={handleCancelGoalDetails}
+        />
+      )}
     </SafeAreaView>
   );
 };

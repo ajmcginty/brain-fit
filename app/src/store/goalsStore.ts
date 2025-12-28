@@ -1,7 +1,20 @@
 import { create } from 'zustand';
 import { Alert } from 'react-native';
-import { GoalsState, DailyGoal, GoalStats } from '../types/goals';
-import { calculateCompletionRate, calculateStreak, formatDate } from '../utils/goalUtils';
+import { GoalsState, DailyGoal, GoalStats, WeeklySummary } from '../types/goals';
+import { 
+  calculateCompletionRate, 
+  calculateStreak, 
+  formatDate,
+  getWeekDateRange,
+  isSunday,
+  calculateWeeklyExerciseTotal,
+  calculateAverageCognitiveMinutes,
+  calculateTotalNewPeople,
+  calculateAverageDietRating,
+  calculateAverageSleep,
+  compareWeeks,
+  isGoalComplete
+} from '../utils/goalUtils';
 import { storage } from '../services/storage';
 import { StorageError } from '../utils/errors';
 import { getCurrentUid } from '../services/cloudAuth';
@@ -138,6 +151,101 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
   getCurrentStreak: () => {
     const { stats } = get();
     return stats.streak;
+  },
+
+  // Weekly summary functions
+  getWeeklyGoals: (weekStartDate: string) => {
+    const { dailyGoals } = get();
+    const weekStart = new Date(weekStartDate);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    return dailyGoals.filter(goal => {
+      const goalDate = new Date(goal.date);
+      return goalDate >= weekStart && goalDate <= weekEnd;
+    });
+  },
+
+  calculateWeeklySummary: (weekStartDate: string) => {
+    const { getWeeklyGoals } = get();
+    const currentWeekGoals = getWeeklyGoals(weekStartDate);
+    
+    // Calculate previous week's date range
+    const prevWeekStart = new Date(weekStartDate);
+    prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+    const previousWeekGoals = getWeeklyGoals(formatDate(prevWeekStart));
+    
+    // Calculate current week metrics
+    const exerciseTotal = calculateWeeklyExerciseTotal(currentWeekGoals);
+    const cognitiveAverage = calculateAverageCognitiveMinutes(currentWeekGoals);
+    const socialTotal = calculateTotalNewPeople(currentWeekGoals);
+    const dietAverage = calculateAverageDietRating(currentWeekGoals);
+    const sleepAverage = calculateAverageSleep(currentWeekGoals);
+    
+    const completedGoals = currentWeekGoals.filter(isGoalComplete);
+    const completionRate = currentWeekGoals.length > 0 
+      ? (completedGoals.length / currentWeekGoals.length) * 100 
+      : 0;
+    
+    // Calculate previous week metrics
+    const prevExerciseTotal = calculateWeeklyExerciseTotal(previousWeekGoals);
+    const prevCognitiveAverage = calculateAverageCognitiveMinutes(previousWeekGoals);
+    const prevSocialTotal = calculateTotalNewPeople(previousWeekGoals);
+    const prevDietAverage = calculateAverageDietRating(previousWeekGoals);
+    const prevSleepAverage = calculateAverageSleep(previousWeekGoals);
+    
+    const isFirstWeek = previousWeekGoals.length === 0;
+    
+    const weekRange = getWeekDateRange(new Date(weekStartDate));
+    
+    const summary: WeeklySummary = {
+      weekStart: weekRange.start,
+      weekEnd: weekRange.end,
+      exerciseTotal,
+      exerciseGoalMet: exerciseTotal >= 150,
+      cognitiveAverage: Math.round(cognitiveAverage * 10) / 10,
+      socialTotal,
+      dietAverage: Math.round(dietAverage * 10) / 10,
+      sleepAverage: Math.round(sleepAverage * 10) / 10,
+      completionRate: Math.round(completionRate),
+      isFirstWeek,
+    };
+    
+    // Add comparisons if not first week
+    if (!isFirstWeek) {
+      summary.exerciseComparison = compareWeeks(exerciseTotal, prevExerciseTotal);
+      summary.cognitiveComparison = compareWeeks(cognitiveAverage, prevCognitiveAverage);
+      summary.socialComparison = compareWeeks(socialTotal, prevSocialTotal);
+      summary.dietComparison = compareWeeks(dietAverage, prevDietAverage);
+      summary.sleepComparison = compareWeeks(sleepAverage, prevSleepAverage);
+    }
+    
+    return summary;
+  },
+
+  hasSeenWeeklySummary: async (weekStartDate: string) => {
+    try {
+      const viewed = await storage.getWeeklySummaryViewed();
+      return viewed.includes(weekStartDate);
+    } catch (error) {
+      console.error('Error checking weekly summary viewed:', error);
+      return false;
+    }
+  },
+
+  markWeeklySummaryViewed: async (weekStartDate: string) => {
+    try {
+      const viewed = await storage.getWeeklySummaryViewed();
+      if (!viewed.includes(weekStartDate)) {
+        await storage.saveWeeklySummaryViewed([...viewed, weekStartDate]);
+      }
+    } catch (error) {
+      console.error('Error marking weekly summary as viewed:', error);
+    }
+  },
+
+  isWeeklySummaryAvailable: () => {
+    return isSunday();
   },
 
   // Reset store (for logout)
